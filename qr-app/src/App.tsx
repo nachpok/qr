@@ -41,19 +41,24 @@ function App() {
   const onChange = (checked: boolean) => {
     setBackground(checked);
   };
-
+  const determineSize = (url: string) => {
+    const baseSize = 160;
+    const increment = 10;
+    const threshold = 20;
+    const extraSize = Math.floor(url.length / threshold) * increment;
+    return baseSize + extraSize;
+  };
   return (
     <>
       <h1>QR Generator</h1>
 
       <Space direction="vertical" align="center">
         <div id="myqrcode">
-          <QRCode value={text || "-"} />
+          <QRCode value={text || "-"} size={determineSize(text)} />
         </div>
 
         <Input
           placeholder="-"
-          maxLength={60}
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
