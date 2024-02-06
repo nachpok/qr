@@ -62,6 +62,15 @@ function App() {
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
+        {text?.length > 60 ? (
+          <span style={{ display: "block", whiteSpace: "pre-line" }}>
+            In order to simplify the QR code
+            <br />
+            please shorten the URL
+          </span>
+        ) : (
+          <></>
+        )}
         <Switch
           checkedChildren="With background"
           unCheckedChildren="No background"
