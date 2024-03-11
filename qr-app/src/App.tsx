@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { Button, Input, QRCode, Space, Switch } from "antd";
+import Button from "antd/es/button";
+import QRCode from "antd/es/qr-code";
+import Input from "antd/es/input";
+import Space from "antd/es/space";
+import Switch from "antd/es/switch";
+
 import "./App.css";
 
 const downloadQRCode = (background: boolean) => {
   const canvas = document
-    .getElementById("myqrcode")
+    .getElementById("myQrCode")
     ?.querySelector<HTMLCanvasElement>("canvas");
   if (canvas && !background) {
     const url = canvas.toDataURL();
@@ -21,7 +26,7 @@ const downloadQRCode = (background: boolean) => {
     newCanvas.height = canvas.height + 40;
     const ctx = newCanvas.getContext("2d");
     if (ctx) {
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = "#f5f5f5f5";
       ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
       ctx.drawImage(canvas, 20, 20);
     }
@@ -53,7 +58,14 @@ function App() {
       <h1>QR Generator</h1>
 
       <Space direction="vertical" align="center">
-        <div id="myqrcode">
+        <div
+          id="myQrCode"
+          className="myQrCode"
+          style={{
+            backgroundColor: background ? "white" : "gray",
+            borderRadius: "10px",
+          }}
+        >
           <QRCode value={text || "-"} size={determineSize(text)} />
         </div>
 
@@ -72,10 +84,10 @@ function App() {
           <></>
         )}
         <Switch
-          checkedChildren="With background"
-          unCheckedChildren="No background"
           defaultChecked
           onChange={onChange}
+          checkedChildren="With background"
+          unCheckedChildren="No background"
         />
         <Button type="primary" onClick={() => downloadQRCode(background)}>
           Download
