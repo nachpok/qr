@@ -6,19 +6,37 @@ import Space from "antd/es/space";
 import Switch from "antd/es/switch";
 
 import "./App.css";
-
+const isIOS = () => {
+  const result =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  alert("User Agent: " + navigator.userAgent + ", isIOS: " + result);
+  return result;
+};
 const downloadQRCode = (background: boolean) => {
   const canvas = document
     .getElementById("myQrCode")
     ?.querySelector<HTMLCanvasElement>("canvas");
+
   if (canvas && !background) {
     const url = canvas.toDataURL();
-    const a = document.createElement("a");
-    a.download = "QRCode.png";
-    a.href = url;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    if (isIOS()) {
+      const imgWindow = window.open("");
+      if (imgWindow) {
+        imgWindow.document.write(
+          '<img src="' +
+            url +
+            '" alt="QRCode" style="max-width: 100%; height: auto;">'
+        );
+        imgWindow.document.title = "Tap and hold to save";
+      }
+    } else {
+      const a = document.createElement("a");
+      a.download = "QRCode.png";
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   }
   if (canvas && background) {
     const newCanvas = document.createElement("canvas");
