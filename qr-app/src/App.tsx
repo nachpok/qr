@@ -6,15 +6,23 @@ import Space from "antd/es/space";
 import Switch from "antd/es/switch";
 
 import "./App.css";
+const isIOS = () => {
+  const result =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  // alert("User Agent: " + navigator.userAgent + ", isIOS: " + result);
+  return result;
+};
 
-const downloadQRCode = (background: boolean) => {
+const downloadQRCode = (qrText: string, background: boolean) => {
+  const domainName = getDomainName(qrText) + ".png";
   const canvas = document
     .getElementById("myQrCode")
     ?.querySelector<HTMLCanvasElement>("canvas");
+
   if (canvas && !background) {
     const url = canvas.toDataURL();
     const a = document.createElement("a");
-    a.download = "QRCode.png";
+    a.download = domainName;
     a.href = url;
     document.body.appendChild(a);
     a.click();
@@ -32,16 +40,29 @@ const downloadQRCode = (background: boolean) => {
     }
     const url = newCanvas.toDataURL();
     const a = document.createElement("a");
-    a.download = "QRCode.png";
+    a.download = domainName;
     a.href = url;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
   }
 };
+function getDomainName(inputUrl: string) {
+  const urlWithProtocol =
+    inputUrl.startsWith("http://") || inputUrl.startsWith("https://")
+      ? inputUrl
+      : `https://${inputUrl}`;
+  try {
+    const url = new URL(urlWithProtocol);
+    return url.hostname;
+  } catch (error) {
+    console.error("Invalid URL");
+    return null;
+  }
+}
 
 function App() {
-  const [text, setText] = useState("qr.nachli.com");
+  const [qrText, setQrText] = useState("qr.nachli.com");
   const [background, setBackground] = useState(true);
   const onChange = (checked: boolean) => {
     setBackground(checked);
@@ -67,15 +88,15 @@ function App() {
             borderRadius: "10px",
           }}
         >
-          <QRCode value={text || "-"} size={determineSize(text)} />
+          <QRCode value={qrText || "-"} size={determineSize(qrText)} />
         </div>
 
         <Input
           placeholder="-"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
+          value={qrText}
+          onChange={(e) => setQrText(e.target.value)}
         />
-        {text?.length > 60 ? (
+        {qrText?.length > 60 ? (
           <span style={{ display: "block", whiteSpace: "pre-line" }}>
             In order to simplify the QR code
             <br />
@@ -89,8 +110,12 @@ function App() {
           onChange={onChange}
           checkedChildren="With background"
           unCheckedChildren="No background"
+          disabled={isIOS()}
         />
-        <Button type="primary" onClick={() => downloadQRCode(background)}>
+        <Button
+          type="primary"
+          onClick={() => downloadQRCode(qrText, background)}
+        >
           Download
         </Button>
 
