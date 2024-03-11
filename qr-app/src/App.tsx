@@ -13,6 +13,7 @@ const isIOS = () => {
   return result;
 };
 const downloadQRCode = (background: boolean) => {
+  isIOS();
   const canvas = document
     .getElementById("myQrCode")
     ?.querySelector<HTMLCanvasElement>("canvas");
