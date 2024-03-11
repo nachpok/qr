@@ -6,12 +6,12 @@ import Space from "antd/es/space";
 import Switch from "antd/es/switch";
 
 import "./App.css";
-// const isIOS = () => {
-//   const result =
-//     /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-//   alert("User Agent: " + navigator.userAgent + ", isIOS: " + result);
-//   return result;
-// };
+const isIOS = () => {
+  const result =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  // alert("User Agent: " + navigator.userAgent + ", isIOS: " + result);
+  return result;
+};
 
 const downloadQRCode = (qrText: string, background: boolean) => {
   const domainName = getDomainName(qrText) + ".png";
@@ -109,6 +109,7 @@ function App() {
           onChange={onChange}
           checkedChildren="With background"
           unCheckedChildren="No background"
+          disabled={isIOS()}
         />
         <Button
           type="primary"
