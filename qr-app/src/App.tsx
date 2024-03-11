@@ -9,12 +9,10 @@ import "./App.css";
 const isIOS = () => {
   const result =
     /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-  alert("User Agent: " + navigator.userAgent + ", isIOS: " + result);
+  // alert("User Agent: " + navigator.userAgent + ", isIOS: " + result);
   return result;
 };
 const downloadQRCode = (background: boolean) => {
-  alert("This is an alert message!");
-  isIOS();
   const canvas = document
     .getElementById("myQrCode")
     ?.querySelector<HTMLCanvasElement>("canvas");
