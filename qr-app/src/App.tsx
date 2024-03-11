@@ -53,6 +53,7 @@ function App() {
     const extraSize = Math.floor(url.length / threshold) * increment;
     return baseSize + extraSize;
   };
+
   return (
     <>
       <h1>QR Generator</h1>
@@ -91,6 +92,10 @@ function App() {
         />
         <Button type="primary" onClick={() => downloadQRCode(background)}>
           Download
+        </Button>
+
+        <Button type="primary" onClick={installPWA}>
+          Install PWA
         </Button>
       </Space>
     </>

@@ -18,14 +18,18 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) {
-        return response;
-      }
-      return fetch(event.request);
-    })
-  );
+  // Check if the request is for a development file
+  if (event.request.url.includes("/node_modules/.vite/")) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        return response || fetch(event.request);
+      })
+    );
+  }
 });
 
 self.addEventListener("activate", (event) => {
