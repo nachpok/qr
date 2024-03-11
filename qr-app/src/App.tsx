@@ -13,6 +13,7 @@ const isIOS = () => {
   return result;
 };
 const downloadQRCode = (background: boolean) => {
+  alert("This is an alert message!");
   isIOS();
   const canvas = document
     .getElementById("myQrCode")
