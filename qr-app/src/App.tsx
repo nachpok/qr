@@ -118,10 +118,6 @@ function App() {
         >
           Download
         </Button>
-
-        <Button type="primary" onClick={installPWA}>
-          Install PWA
-        </Button>
       </Space>
     </>
   );
