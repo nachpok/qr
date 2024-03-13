@@ -18,7 +18,6 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  // Check if the request is for a development file
   if (event.request.url.includes("/node_modules/.vite/")) {
     event.respondWith(
       fetch(event.request).catch(() => caches.match(event.request))
