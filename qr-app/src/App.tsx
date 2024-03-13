@@ -120,15 +120,7 @@ function App() {
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         />
-        {inputText?.length > 60 ? (
-          <span style={{ display: "block", whiteSpace: "pre-line" }}>
-            In order to simplify the QR code
-            <br />
-            please shorten the URL
-          </span>
-        ) : (
-          <></>
-        )}
+
         {shortUrl ? (
           <Switch
             defaultChecked
