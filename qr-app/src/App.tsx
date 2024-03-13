@@ -106,7 +106,7 @@ function App() {
             }}
           >
             <QRCode
-              value={"s.nachli.com/" + shortUrl.shortCode || "-"}
+              value={"s.nachli.com/api/" + shortUrl.shortCode || "-"}
               size={determineSize(shortUrl.shortCode) + 13}
             />
           </div>
