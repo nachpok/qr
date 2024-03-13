@@ -4,3 +4,14 @@
   padding: 2rem;
   text-align: center;
 }
+
+.qrContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 1rem;
+}

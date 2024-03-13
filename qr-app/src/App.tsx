@@ -7,6 +7,8 @@ import Switch from "antd/es/switch";
 
 import "./App.css";
 import { createShortUrl } from "./firebase";
+import { Tooltip } from "antd";
+import Link from "antd/es/typography/Link";
 const isIOS = () => {
   const result =
     /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -80,7 +82,16 @@ function App() {
       setShortUrl({ shortCode: shortCode, originalUrl: inputText });
     }
   };
-
+  const copyToClipboard = (shortCode: string) => {
+    navigator.clipboard.writeText(`s.nachli.com/api/${shortCode}`).then(
+      () => {
+        console.log("Text copied to clipboard");
+      },
+      (err) => {
+        console.error("Failed to copy text: ", err);
+      }
+    );
+  };
   const onChange = (checked: boolean) => {
     setBackground(checked);
   };
@@ -98,37 +109,58 @@ function App() {
 
       <Space direction="vertical" align="center">
         {shortUrl ? (
-          <div
-            id="myQrCode"
-            className="myQrCode"
-            style={{
-              backgroundColor: background ? "white" : "gray",
-              borderRadius: "10px",
-            }}
-          >
-            <QRCode
-              value={"s.nachli.com/api/" + shortUrl.shortCode || "-"}
-              size={determineSize(shortUrl.shortCode) + 13}
-            />
+          <div className="qrContainer">
+            <div
+              id="myQrCode"
+              className="myQrCode"
+              style={{
+                backgroundColor: background ? "white" : "gray",
+                borderRadius: "10px",
+              }}
+            >
+              <QRCode
+                value={"s.nachli.com/api/" + shortUrl.shortCode || "-"}
+                size={determineSize(shortUrl.shortCode) + 13}
+              />
+            </div>
+            <Tooltip
+              trigger={["hover"]}
+              title={"Click to copy to clipboard"}
+              placement="topLeft"
+              overlayClassName="numeric-input"
+            >
+              <Link onClick={() => copyToClipboard(shortUrl.shortCode)}>
+                s.nachli.com/api/{shortUrl.shortCode}
+              </Link>
+            </Tooltip>
           </div>
         ) : (
           <></>
         )}
 
-        <Input
-          placeholder="-"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-        />
+        <Tooltip
+          trigger={["hover"]}
+          title={inputText}
+          placement="topLeft"
+          overlayClassName="numeric-input"
+        >
+          <Input
+            placeholder="-"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+          />
+        </Tooltip>
 
         {shortUrl ? (
-          <Switch
-            defaultChecked
-            onChange={onChange}
-            checkedChildren="With background"
-            unCheckedChildren="No background"
-            disabled={isIOS()}
-          />
+          <>
+            <Switch
+              defaultChecked
+              onChange={onChange}
+              checkedChildren="With background"
+              unCheckedChildren="No background"
+              disabled={isIOS()}
+            />
+          </>
         ) : (
           <></>
         )}
