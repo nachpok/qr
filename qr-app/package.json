@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase/database": "^1.0.3",
     "antd": "^5.5.0",
+    "firebase": "^10.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "vite-plugin-pwa": "^0.19.2"

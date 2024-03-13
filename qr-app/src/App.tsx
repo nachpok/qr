@@ -6,6 +6,7 @@ import Space from "antd/es/space";
 import Switch from "antd/es/switch";
 
 import "./App.css";
+import { createShortUrl } from "./firebase";
 const isIOS = () => {
   const result =
     /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -47,6 +48,7 @@ const downloadQRCode = (qrText: string, background: boolean) => {
     document.body.removeChild(a);
   }
 };
+
 function getDomainName(inputUrl: string) {
   const urlWithProtocol =
     inputUrl.startsWith("http://") || inputUrl.startsWith("https://")
@@ -61,9 +63,24 @@ function getDomainName(inputUrl: string) {
   }
 }
 
+interface ShortUrl {
+  shortCode: string;
+  originalUrl: string;
+}
+
 function App() {
-  const [qrText, setQrText] = useState("qr.nachli.com");
+  const [inputText, setInputText] = useState("qr.nachli.com");
+  const [shortUrl, setShortUrl] = useState<ShortUrl | null>(null);
   const [background, setBackground] = useState(true);
+  const generateQR = () => {
+    let shortCode = null; //TODO check if exists, if null create
+    if (!shortCode) {
+      shortCode = generateShortId(); //TODO find a way to not generate the same short code
+      createShortUrl(shortCode, inputText);
+      setShortUrl({ shortCode: shortCode, originalUrl: inputText });
+    }
+  };
+
   const onChange = (checked: boolean) => {
     setBackground(checked);
   };
@@ -80,23 +97,30 @@ function App() {
       <h1>QR Generator</h1>
 
       <Space direction="vertical" align="center">
-        <div
-          id="myQrCode"
-          className="myQrCode"
-          style={{
-            backgroundColor: background ? "white" : "gray",
-            borderRadius: "10px",
-          }}
-        >
-          <QRCode value={qrText || "-"} size={determineSize(qrText)} />
-        </div>
+        {shortUrl ? (
+          <div
+            id="myQrCode"
+            className="myQrCode"
+            style={{
+              backgroundColor: background ? "white" : "gray",
+              borderRadius: "10px",
+            }}
+          >
+            <QRCode
+              value={"s.nachli.com/api/" + shortUrl.shortCode || "-"}
+              size={determineSize(shortUrl.shortCode) + 13}
+            />
+          </div>
+        ) : (
+          <></>
+        )}
 
         <Input
           placeholder="-"
-          value={qrText}
-          onChange={(e) => setQrText(e.target.value)}
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
         />
-        {qrText?.length > 60 ? (
+        {inputText?.length > 60 ? (
           <span style={{ display: "block", whiteSpace: "pre-line" }}>
             In order to simplify the QR code
             <br />
@@ -105,22 +129,45 @@ function App() {
         ) : (
           <></>
         )}
-        <Switch
-          defaultChecked
-          onChange={onChange}
-          checkedChildren="With background"
-          unCheckedChildren="No background"
-          disabled={isIOS()}
-        />
-        <Button
-          type="primary"
-          onClick={() => downloadQRCode(qrText, background)}
-        >
-          Download
-        </Button>
+        {shortUrl ? (
+          <Switch
+            defaultChecked
+            onChange={onChange}
+            checkedChildren="With background"
+            unCheckedChildren="No background"
+            disabled={isIOS()}
+          />
+        ) : (
+          <></>
+        )}
+        {shortUrl?.originalUrl !== inputText ? (
+          <Button type="primary" onClick={() => generateQR()}>
+            Generate
+          </Button>
+        ) : shortUrl ? (
+          <Button
+            type="primary"
+            onClick={() => downloadQRCode(inputText, background)}
+          >
+            Download
+          </Button>
+        ) : (
+          <></>
+        )}
       </Space>
     </>
   );
 }
 
 export default App;
+
+function generateShortId(length = 6) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
