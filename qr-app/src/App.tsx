@@ -4,11 +4,11 @@ import QRCode from "antd/es/qr-code";
 import Input from "antd/es/input";
 import Space from "antd/es/space";
 import Switch from "antd/es/switch";
-
+import { CopyOutlined } from "@ant-design/icons";
 import "./App.css";
-import { createShortUrl } from "./firebase";
-import { Tooltip } from "antd";
+import { createShortUrl, doesCodeExists } from "./firebase";
 import Link from "antd/es/typography/Link";
+import Tooltip from "antd/es/tooltip";
 const isIOS = () => {
   const result =
     /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -74,10 +74,10 @@ function App() {
   const [inputText, setInputText] = useState("qr.nachli.com");
   const [shortUrl, setShortUrl] = useState<ShortUrl | null>(null);
   const [background, setBackground] = useState(true);
-  const generateQR = () => {
+  const generateQR = async () => {
     let shortCode = null; //TODO check if exists, if null create
     if (!shortCode) {
-      shortCode = generateShortId(); //TODO find a way to not generate the same short code
+      shortCode = await generateShortId(); //TODO find a way to not generate the same short code
       createShortUrl(shortCode, inputText);
       setShortUrl({ shortCode: shortCode, originalUrl: inputText });
     }
@@ -119,37 +119,31 @@ function App() {
               }}
             >
               <QRCode
-                value={"s.nachli.com/api/" + shortUrl.shortCode || "-"}
+                value={"s.nachli.com/api/" + shortUrl.shortCode || ""}
                 size={determineSize(shortUrl.shortCode) + 13}
               />
             </div>
-            <Tooltip
-              trigger={["hover"]}
-              title={"Click to copy to clipboard"}
-              placement="topLeft"
-              overlayClassName="numeric-input"
-            >
-              <Link onClick={() => copyToClipboard(shortUrl.shortCode)}>
-                s.nachli.com/api/{shortUrl.shortCode}
-              </Link>
+            <Tooltip title="Copy to clipboard">
+              <div>
+                <Button
+                  onClick={() => copyToClipboard(shortUrl.shortCode)}
+                  style={{ marginTop: "10px" }}
+                >
+                  <Link>s.nachli.com/api/{shortUrl.shortCode}</Link>
+                  &nbsp;
+                  <CopyOutlined />
+                </Button>
+              </div>
             </Tooltip>
           </div>
         ) : (
           <></>
         )}
 
-        <Tooltip
-          trigger={["hover"]}
-          title={inputText}
-          placement="topLeft"
-          overlayClassName="numeric-input"
-        >
-          <Input
-            placeholder="-"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-          />
-        </Tooltip>
+        <Input
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+        />
 
         {shortUrl ? (
           <>
@@ -185,13 +179,19 @@ function App() {
 
 export default App;
 
-function generateShortId(length = 6) {
+async function generateShortId(length = 6) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
   const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
+  let flag = false;
+  do {
+    result = "";
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    flag = await doesCodeExists(result);
+  } while (flag);
+
   return result;
 }

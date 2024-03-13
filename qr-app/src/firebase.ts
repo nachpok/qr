@@ -22,7 +22,6 @@ export function createShortUrl(shortCode: string, originalUrl: string) {
     createdAt: Date.now(),
   })
     .then(() => {
-      console.log("URL shortened successfully!");
       return shortCode;
     })
     .catch((error) => {
@@ -30,16 +29,16 @@ export function createShortUrl(shortCode: string, originalUrl: string) {
     });
 }
 
-export function getOriginalUrl(shortCode: string) {
-  get(child(ref(database), "urls/" + shortCode))
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        return snapshot.val().originalUrl;
-      } else {
-        return null;
-      }
-    })
-    .catch((error) => {
-      console.error("Error getting original URL:", error);
-    });
+export async function doesCodeExists(shortCode: string): Promise<boolean> {
+  try {
+    const snapshot = await get(child(ref(database), "urls/" + shortCode));
+    if (snapshot.exists()) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error getting original URL:", error);
+    return false;
+  }
 }

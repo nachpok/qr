@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.3.1",
     "@firebase/database": "^1.0.3",
     "antd": "^5.5.0",
     "firebase": "^10.8.1",
